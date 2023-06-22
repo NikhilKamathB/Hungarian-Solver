@@ -1,14 +1,27 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-project(hungarian_optimizer)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-add_compile_options(-std=c++11)
+project(hungarianSolver LANGUAGES CXX)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+# Make sure install paths work on all platforms.
+if(NOT CMAKE_INSTALL_INCLUDEDIR)
+    include(GNUInstallDirs)
+endif()
 
-include_directories(/usr/include/eigen3)
+find_package( Eigen3 REQUIRED )
+include_directories(${EIGEN3_INCLUDE_DIR})
 
-file(GLOB_RECURSE HEADERS "inc/*.h")
+add_library(hungarianSolver INTERFACE)
+target_include_directories(hungarianSolver
+    INTERFACE
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
-add_executable(${PROJECT_NAME} main.cpp ${HEADERS} ${SOURCES})
+# add_library(${PROJECT_NAME} main.cpp ${HEADERS} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME})
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/hungarianSolver
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING # headers only
+    PATTERN "*.h"
+)
